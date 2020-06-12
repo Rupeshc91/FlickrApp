@@ -4,29 +4,64 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
-import com.android.flickrapp.R
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.android.flickrapp.databinding.HomeFragmentBinding
+import com.android.flickrapp.di.Injectable
+import com.android.flickrapp.di.ViewModelFactory
+import javax.inject.Inject
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), Injectable, SearchView.OnQueryTextListener {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var adapter: MainAdapter
+    private lateinit var binding: HomeFragmentBinding
+
+    private val viewModel by viewModels<HomeViewModel> {
+        viewModelFactory
+    }
 
     companion object {
         fun newInstance() = HomeFragment()
     }
 
-    private lateinit var viewModel: HomeViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.home_fragment, container, false)
+    ): View {
+        binding = HomeFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        // TODO: Use the ViewModel
+        adapter = MainAdapter()
+        binding.recyclerView.adapter = adapter
+        subscribeOnUi()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.searchView.setOnQueryTextListener(this)
+    }
+
+    private fun subscribeOnUi() {
+        viewModel.flickrPhotos.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+        })
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let {
+            viewModel.getFlickrPhotos(it)
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
+    }
 }

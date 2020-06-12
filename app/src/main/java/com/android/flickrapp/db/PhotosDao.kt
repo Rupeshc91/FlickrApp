@@ -11,7 +11,7 @@ import com.android.flickrapp.model.Photo
 interface PhotosDao {
 
     @Query("SELECT * from photos where title=:query")
-    suspend fun getPhotosByQuery(query: String): DataSource.Factory<Int, Photo>
+     fun getPhotosByQuery(query: String): DataSource.Factory<Int, Photo>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(photos: List<Photo>)

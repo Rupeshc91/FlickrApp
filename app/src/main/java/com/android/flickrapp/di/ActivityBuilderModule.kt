@@ -1,6 +1,6 @@
 package com.android.flickrapp.di
 
-import com.readystatesoftware.chuck.internal.ui.MainActivity
+import com.android.flickrapp.MainActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

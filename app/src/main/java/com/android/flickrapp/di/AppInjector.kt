@@ -15,7 +15,7 @@ object AppInjector {
     fun init(application: FlickrApplication) {
         DaggerAppComponent.builder().application(application)
             .build().inject(application)
-        application
+             application
             .registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
                 override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                     handleActivity(activity)
